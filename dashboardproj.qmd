@@ -1,0 +1,224 @@
+---
+title: "Project Dashboard"
+subtitle: "How do income levels and racial differences affect housing affordability?"
+date: today
+format:
+  dashboard:
+    embed-resources: true
+    theme: defult
+---
+
+
+
+```{r}
+
+library(tidyverse)
+library(plotly)
+library(DT)
+income<- read.csv("incomes_Neighborhoods.csv")
+rent<- read.csv("Housing_Cost_Burden_by_Race.csv")
+
+
+```
+
+
+```{r}
+file_name <- "incomes_Neighborhoods.csv"
+income <- read_csv(file_name)
+```
+
+
+```{r}
+file_name <- "Housing_Cost_Burden_by_Race.csv"
+rent <- read_csv(file_name)
+```
+
+# Presenting Data 1
+
+## Row 1 {height=20%}
+
+::: {.card title="Visualizaion 1 Notes"}
+This graph shows the average income per person for each neighborhood. Income per capita is calculated by dividing the total household income in a neighborhood by its total population. The neighborhoods are reordered so that the highest-income neighborhoods appear at the top, making it easy to compare income levels across neighborhoods. Filtering to the top (or bottom) neighborhoods helps keep the chart readable while highlighting areas with the highest or lowest income per person..
+:::
+
+## Row 2 {height=80%}
+
+### Row 2 Column 1
+::: {.card title="Total Income by Neighborhood"}
+```{r}
+
+income |>
+  mutate(income_per_capita = `Aggregate Household Income` / `Total Population`) |>
+  slice_max(order_by = income_per_capita, n = 40) |>
+  ggplot(aes(y = reorder(`Neighborhood Name`, income_per_capita),
+             x = income_per_capita)) +
+  geom_col(fill = "steelblue") +
+  labs(
+    x = "Income per Person ($)",
+    y = "Neighborhood",
+    title = "Average Income per Person by Neighborhood"
+  ) +
+  theme_minimal()
+```
+:::
+
+### Row 2 Column 2
+
+```{r}
+#| title: "Income Record"
+income |> datatable()
+```
+
+# Presenting Data 2
+
+## Row 1 {height=20%}
+
+::: {.card title="Visualizaion 2 Notes"}
+This scatterplot shows the relationship between household income and housing cost burden, broken down by race. Each point represents a household or group of households, with income on the x-axis and the percentage of income spent on housing on the y-axis. Colors indicate race, making it easy to see which racial groups face higher housing burdens at similar income levels.
+:::
+
+## Row 2 {height=80%}
+
+### Row 2 Column 1
+::: {.card title="Income vs Housing Cost Burden by Race"}
+```{r}
+
+
+
+rent_filtered <- rent |>
+  filter(INCOME <= 100000)
+
+p <- ggplot(rent_filtered, aes(x = INCOME, y = PERCENT30, color = RACE)) +
+  geom_point(alpha = 0.5, size = 2) +
+  labs(
+    x = "Income ($)",
+    y = "Percent of Households with Cost Burden > 30%",
+    title = "Income vs Housing Cost Burden by Race"
+  ) +
+  theme_minimal()
+
+ggplotly(p)
+```
+
+:::
+### Row 2 Column 2
+```{r}
+#| title: "Rent Record"
+rent |> datatable()
+```
+
+
+# Data Context
+::: {.row}
+::: {.card title="Big Picture Topic / Population"}
+
+**Big question:** How do income levels and racial differences affect housing affordability in Seattle?  
+**Population of interest:** Seattle households, renters, and demographic groups across neighborhoods and racial categories.
+
+:::
+:::
+
+::: {.row}
+::: {.card title="Income Dataset (Neighborhoods)"}
+
+**Public link (availability):** [ttps://data.seattle.gov/dataset/Incomes-Occupations-and-Earnings-Seattle-Neighborh/5r7r-hvze]() 
+
+**Original creator:** U.S. Census **American Community Survey (ACS)**; compiled and published by the **City of Seattle Office of Planning & Community Development (OPCD)**.
+
+**Sample:**  
+This dataset reports several income measures for Seattle neighborhoods, including median household income, per-capita income, and aggregate household earnings. The data comes from the ACS, which surveys a sample of U.S. households and uses weighting to estimate economic conditions for small geographic areas. Each row represents a Seattle neighborhood boundary, allowing comparisons of income levels across different parts of the city. Because ACS data is sample-based, values include sampling error, especially for smaller neighborhoods or less common variables. Income values are also inflation-adjusted to ensure comparability across time.
+
+**What was measured & how:** Income-related statistics collected through ACS household surveys, then aggregated to neighborhood boundaries by the City of Seattle.  
+**How many recordings:** One row per Seattle neighborhood.  
+**Year & geography:** Drawn from ACS 5-year estimates (2020), Seattle neighborhood geographies.  
+**Strength/limitation:** Provides standardized federal income estimates across neighborhoods; however, ACS sampling error and neighborhood boundary mismatches can affect precision.
+
+:::
+:::
+
+::: {.row}
+::: {.card title="Housing Cost Burden Dataset (By Race)"}
+
+**Public link (availability):** [https://data.seattle.gov/dataset/Housing-Cost-Burden-by-Race/7xet-i24m/about_data]()
+
+**Original creator:** **Seattle Office of Housing**; data derived from U.S. Census ACS tables.
+
+**Sample:**  
+This dataset reports the percentage of households experiencing housing cost burden (spending ≥30% of income on housing), broken down by racial group and income category. The values are compiled from ACS housing and demographic data, providing insights into affordability conditions across racial demographics in Seattle. Each row re
+
+:::
+:::
+
+# Group Information
+
+::: {.row}
+::: {.card title="Intro" height="20%"}
+**Project Topic:** Do neighborhoods with higher incomes have higher apartment rents in Seattle?  
+**Lab Section:** Wednesday, 10:30 - 11:20  
+**TA:** Anushka Verma
+:::
+:::
+
+::: {.row}
+### Members
+### Row 1 Columns
+
+### Column 1
+::: {.card}
+**Name:** Zeyd Said  
+**Affiliation:** Informatics at University of Washington  
+**UW Email:** zeydsaid@uw.edu  
+**Interest in Project Topic:** Interested in exploring income distribution and its relationship to housing in Seattle neighborhoods.  
+**Interest in Informatics/Data/Careers:** Passionate about Software development and data analysis, aiming to build skills for a future career in those areas.
+:::
+
+### Column 2
+::: {.card}
+**Name:** Salm Mohammed   
+**Affiliation:** Informatics at University of Washington  
+**UW Email:** Salmomer@uw.edu  
+**Interest in Project Topic:** Curious about how neighborhood income levels relate to housing affordability and urban development patterns in Seattle.  
+**Interest in Informatics/Data/Careers:** Passionate about bioinformatics and using data to uncover insights in biology and healthcare.
+:::
+
+### Column 3
+::: {.card}
+**Name:** Onie Suwanchote  
+**Affiliation:** Informatics at University of Washington  
+**UW Email:** suwanpha@uw.edu  
+**Interest in Project Topic:** Interested in analyzing socioeconomic factors across Seattle neighborhoods to identify trends in income and rental costs.  
+**Interest in Informatics/Data/Careers:** Interested in data science with a focus on sports analytics and performance metrics.
+:::
+:::
+
+::: {.row}
+::: {.card title="Coding Notes"}
+- We primarily used R, ggplot2, plotly, and DT, and previous assignments as taught in class.  
+- We also used ChatGPT for debugging and clarification, using it to better understand R errors and formatting. [ChatGPT](https://chat.openai.com)
+:::
+:::
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
